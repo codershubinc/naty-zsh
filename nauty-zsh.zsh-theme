@@ -26,10 +26,11 @@ git_custom_prompt() {
   local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
   if [[ -n $branch ]]; then
     local git_status=$(git status --porcelain 2>/dev/null)
+    local random_text="${git_texts[(($RANDOM % ${#git_texts[@]})) + 1]}"
     if [[ -n $git_status ]]; then
-      echo "$(get_random_git_text) this Branch => ${fg[magenta]}($branch)${reset_color} ✗"
+      echo "$random_text ${fg[magenta]}($branch)${reset_color} Branch ✗"
     else
-      echo "$(get_random_git_text) this Branch => ${fg[magenta]}($branch)${reset_color} ✔"
+      echo "$random_text ${fg[magenta]}($branch)${reset_color} Branch ✔"
     fi
   fi
 }
@@ -55,5 +56,5 @@ ZSH_THEME_DIR_MAX_LENGTH=40                   # Maximum length of the current di
 # Line 1: User and Path
 # Line 2: The command input
 PROMPT='
-${fg[cyan]}%n${reset_color} \$(get_random_git_text) ${fg[blue]}[%~${reset_color}] \$(git_custom_prompt)
----> ${fg[green]}❯${reset_color} '
+${fg[cyan]}%n${reset_color} ${git_texts[(($RANDOM % ${#git_texts[@]})) + 1]} ${fg[blue]}[%~${reset_color}] &&  $(git_custom_prompt)
+Go F**k yourself not this  ==> '
