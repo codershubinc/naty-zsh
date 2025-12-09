@@ -2,20 +2,20 @@
 setopt prompt_subst
 
 # --- Configuration & Assets ---
-# Get the directory where this theme file is located
 THEME_DIR="${0:A:h}"
 
-# 1. Random Text Loader (With Fallback)
-git_texts=("Keep Coding" "Stay Hard" "Focus" "Ship It" "Debug Mode" "Arch User" "Sudo Make Me a Sandwich")
+# 1. Random Text (Generic / Motivational)
+# No more "Gemini" text, back to coding vibes
+git_texts=("Keep Coding" "Stay Hard" "Focus" "Ship It" "Debug Mode" "Arch User" "Terminal Addict")
 if [[ -f "$THEME_DIR/nauty-zsh-random-texts.txt" ]]; then
   git_texts=(${(f)"$(<"$THEME_DIR/nauty-zsh-random-texts.txt")"})
 fi
 
-# 2. Doodles Array
+# 2. "Starlight" Doodles (The ones you liked)
+# Stars, sparkles, and cool vibes
 random_doodles=(
-  "(ﾉ◕ヮ◕)ﾉ" "( ͡° ͜ʖ ͡°)" "(づ｡◕‿‿◕｡)づ" "ヽ(´▽\`)/" "(つ°ヮ°)つ"
-  "ʕ•ᴥ•ʔ" "(⌐■_■)" "¯\\_(ツ)_/¯" "(╯°□°）╯︵ ┻━┻" "┬─┬ノ( º _ ºノ)"
-  "☜(ﾟヮﾟ☜)" "ᕕ( ᐛ )ᕗ" "ಠ_ಠ" "(ง'̀-'́)ง" "└(￣-￣└)" "⚡" "💀" "👽"
+  "( ✦ ‿ ✦ )" "✧( ु•⌄• )" "[ ✦_✦ ]" "*( ◕ ◡ ◕ )*" "⟡"
+  "✧･ﾟ: *" "<( ✦ )>" "☾˙❀" "【 ✦ 】" "⚡"
 )
 
 # --- Helper Functions ---
@@ -29,83 +29,110 @@ get_random_msg() {
   echo "${git_texts[$RANDOM % ${#git_texts[@]} + 1]}"
 }
 
-# --- Version Detection (Fixed for Width) ---
+# --- Version Detection (Fixed Width) ---
 detect_project_versions() {
   local versions=""
   
-  # Go
-  if [[ -f "go.mod" ]]; then
-    local v=$(go version 2>/dev/null | awk '{print $3}' | sed 's/go//')
-    versions+=" %B%F{cyan} ${v}%f%b"
-  fi
+  # Go (Cyan)
+  [[ -f "go.mod" ]] && versions+=" %B%F{cyan}$(go version 2>/dev/null | awk '{print $3}' | sed 's/go//')%f%b"
   
-  # Node / JS
-  if [[ -f "package.json" ]]; then
-    local v=$(node --version 2>/dev/null | sed 's/v//')
-    versions+=" %B%F{green} ${v}%f%b"
-  fi
+  # Node (Green)
+  [[ -f "package.json" ]] && versions+=" %B%F{green}$(node --version 2>/dev/null | sed 's/v//')%f%b"
   
-  # Bun
-  if [[ -f "bun.lockb" || -f "bunfig.toml" ]]; then
-    local v=$(bun --version 2>/dev/null)
-    versions+=" %B%F{yellow} ${v}%f%b"
-  fi
+  # Bun (Yellow)
+  [[ -f "bun.lockb" || -f "bunfig.toml" ]] && versions+=" %B%F{yellow}$(bun --version 2>/dev/null)%f%b"
   
-  # Python
-  if [[ -f "requirements.txt" || -f "pyproject.toml" || -f "setup.py" ]]; then
-    local v=$(python3 --version 2>/dev/null | awk '{print $2}')
-    versions+=" %B%F{blue} ${v}%f%b"
-  fi
+  # Python (Blue)
+  [[ -f "requirements.txt" || -f "pyproject.toml" ]] && versions+=" %B%F{blue}$(python3 --version 2>/dev/null | awk '{print $2}')%f%b"
   
-  # Rust
-  if [[ -f "Cargo.toml" ]]; then
-    local v=$(rustc --version 2>/dev/null | awk '{print $2}')
-    versions+=" %B%F{red} ${v}%f%b"
-  fi
+  # Rust (Red)
+  [[ -f "Cargo.toml" ]] && versions+=" %B%F{red}$(rustc --version 2>/dev/null | awk '{print $2}')%f%b"
 
-  # Java
-  if [[ -f "pom.xml" || -f "build.gradle" ]]; then
-    local v=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
-    versions+=" %B%F{magenta} ${v}%f%b"
-  fi
+  # Java (Red)
+  [[ -f "pom.xml" || -f "build.gradle" ]] && versions+=" %B%F{red}$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')%f%b"
+
+  # PHP (Blue)
+  [[ -f "composer.json" ]] && versions+=" %B%F{blue}$(php --version 2>/dev/null | head -n 1 | cut -d' ' -f2)%f%b"
+
+  # Ruby (Red)
+  [[ -f "Gemfile" ]] && versions+=" %B%F{red}$(ruby --version 2>/dev/null | awk '{print $2}')%f%b"
+
+  # Docker (Blue)
+  [[ -f "Dockerfile" || -f "docker-compose.yml" ]] && versions+=" %B%F{blue}%f%b"
+
+  # C/C++ (Blue)
+  [[ -f "CMakeLists.txt" || -f "Makefile" ]] && versions+=" %B%F{blue}$(gcc --version 2>/dev/null | head -n 1 | awk '{print $3}')%f%b"
   
+  # Lua (Blue)
+  [[ -f ".lua-version" ]] && versions+=" %B%F{blue}$(lua -v 2>&1 | awk '{print $2}')%f%b"
+
   echo "$versions"
 }
 
-# --- Git Prompt (Fixed for Width) ---
+# --- Git Prompt (Fixed Width) ---
 git_custom_prompt() {
   local ref
   ref=$(git symbolic-ref --short HEAD 2> /dev/null) || return
 
   local git_status=$(git status --porcelain 2>/dev/null)
-  local added=$(echo "$git_status" | grep -c "^A")
+  
   local modified=$(echo "$git_status" | grep -c "^.M")
+  local total_add=$(echo "$git_status" | grep -c -E "^(A|\?\?)")
   local deleted=$(echo "$git_status" | grep -c "^.D")
-  local untracked=$(echo "$git_status" | grep -c "^??")
   
   local status_text=""
   if [[ -n $git_status ]]; then
-    local total_add=$((added + untracked))
     [[ $total_add -gt 0 ]] && status_text+=" %F{green}+${total_add}"
     [[ $modified -gt 0 ]]  && status_text+=" %F{yellow}~${modified}"
     [[ $deleted -gt 0 ]]   && status_text+=" %F{red}-${deleted}"
     status_text="%f${status_text}"
   else
-    status_text=" %F{green}✔%f"
+    status_text=" %F{cyan}✦%f" # Clean state is a sparkle
   fi
 
   echo " %B%F{magenta} ${ref}${status_text}%f%b"
 }
 
+# Put this with your other functions
+function preexec() {
+  timer=${timer:-$SECONDS}
+}
+
+function precmd() {
+  if [ $timer ]; then
+    local timer_show=$(($SECONDS - $timer))
+    if [[ $timer_show -ge 2 ]]; then
+      # Show time if > 2 seconds (e.g., "3s" or "1m 5s")
+      export RPROMPT_TIME="%F{yellow}⏱ ${timer_show}s%f "
+    else
+      export RPROMPT_TIME=""
+    fi
+    unset timer
+  fi
+}
+get_music_status() {
+  # Check if playerctl is installed
+  if command -v playerctl &> /dev/null; then
+    # Get status of the first available player (usually the active one)
+    
+      local song_full=$(playerctl metadata title 2>/dev/null | head -n 1)
+      
+      local song=$song_full
+      [[ ${#song_full} -gt 25 ]] && song="${song_full:0:25}..."
+      
+      # Show: 🎵 Song - Artist
+      echo " %F{green}🎵 ${song}"
+  fi
+}
+
 # --- The Prompt Layout ---
 
-# We use %F{color} and %B (bold) which Zsh calculates correctly
-# Line 1: [User] [Doodle] [Path] [Git] [Versions]
-# Line 2: [Time] ❯ 
-
+# Line 1: [Arch Icon] [User] [Sparkle Doodle] [Path] [Git] [Versions]
+# Line 2: [Time] ✦ 
+# Added $(get_music_status) before the time
 PROMPT='
-%B%F{cyan}╭─ %n%f%b $(get_random_doodle)  %B%F{blue} %~%f%b$(git_custom_prompt)$(detect_project_versions)
-%B%F{cyan}╰─%F{yellow}  %* ❯%f%b '
+%B%F{blue}╭─%F{cyan}  %n%f%b %F{magenta}$(get_random_doodle)%f %B%F{blue} %~%f%b$(git_custom_prompt)$(detect_project_versions)
+%B%F{blue}╰─%F{magenta} ✦ %* ✦%f '
 
-# Right Prompt
-RPROMPT='%F{240}$(get_random_msg)%f'
+# Right Prompt: Random Text (Grey)
+RPROMPT='%b$(get_music_status) %F{grey}'
