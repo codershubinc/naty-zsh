@@ -1,19 +1,32 @@
-# Enable prompt substitution
+# Enable prompt substitution so functions/vars update every time
 setopt prompt_subst
 
 # --- Configuration & Assets ---
 THEME_DIR="${0:A:h}"
 
-# 1. Random Text
+# 1. Random Text (kept for potential future use)
 git_texts=("Keep Coding" "Stay Hard" "Focus" "Ship It" "Debug Mode" "Arch User" "Terminal Addict")
-if [[ -f "$THEME_DIR/nauty-zsh-random-texts.txt" ]]; then
-  git_texts=(${(f)"$(<"$THEME_DIR/nauty-zsh-random-texts.txt")"})
+if [[ -f "$THEME_DIR/naty-zsh-random-texts.txt" ]]; then
+  git_texts=(${(f)"$(<"$THEME_DIR/naty-zsh-random-texts.txt")"})
 fi
 
 # 2. Doodles
 random_doodles=(
+  # Original & Cosmic
   "( ✦ ‿ ✦ )" "✧( ु•⌄• )" "[ ✦_✦ ]" "*( ◕ ◡ ◕ )*" "⟡"
   "✧･ﾟ: *" "<( ✦ )>" "☾˙❀" "【 ✦ 】" "⚡"
+  
+  # Tech & Cyber (Arch Vibes)
+  "くコ:彡" "[ ⚠_⚠ ]" "( 0_0 )" "⊂(▀¯▀⊂)"
+  "〈 0x0 〉" "⌁☍" "【 ✖_✖ 】"
+  
+  # Music & Romantic
+  "( ˘ ɜ˘) ♬" "♫ ꒰･◡･꒱ ♫" "( ~*-*)~"
+  "♥( ◡‿◡ )" "♪♪(o_o)♪♪"
+  
+  # Cute & Kaomoji
+  "(≧◡≦)" "(¬‿¬)" "♡( ━_━ )"
+  "*:･ﾟ✧" "(◕‿◕✿)" "uwu"
 )
 
 # --- Helper Functions ---
@@ -22,12 +35,14 @@ get_random_doodle() {
   echo "${random_doodles[$index]}"
 }
 
-get_random_msg() {
-  echo "${git_texts[$RANDOM % ${#git_texts[@]} + 1]}"
+get_random_git_text() {
+  local index=$(( RANDOM % ${#git_texts[@]} + 1 ))
+  echo "${git_texts[$index]}"
 }
 
-# --- Heavy Logic: Version Detection (Run only on dir change) ---
-detect_project_versions() {
+# --- Heavy Logic: Version Detection ---
+# We define the function, but we will call it smartly in precmd
+detect_project_versions_logic() {
   local versions=""
   
   # Go
@@ -36,34 +51,22 @@ detect_project_versions() {
   # Node
   [[ -f "package.json" ]] && versions+=" %B%F{green} $(node --version 2>/dev/null | sed 's/v//')%f%b"
   
-  # Bun
-  [[ -f "bun.lockb" || -f "bunfig.toml" ]] && versions+=" %B%F{yellow} $(bun --version 2>/dev/null)%f%b"
-  
   # Python
   [[ -f "requirements.txt" || -f "pyproject.toml" ]] && versions+=" %B%F{blue} $(python3 --version 2>/dev/null | awk '{print $2}')%f%b"
   
   # Rust
   [[ -f "Cargo.toml" ]] && versions+=" %B%F{red} $(rustc --version 2>/dev/null | awk '{print $2}')%f%b"
 
-  # Java
-  [[ -f "pom.xml" || -f "build.gradle" ]] && versions+=" %B%F{red} $(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')%f%b"
-
-  # Kotlin
-  [[ -f "build.gradle.kts" || -f "settings.gradle.kts" ]] && versions+=" %B%F{magenta} $(command -v kotlinc >/dev/null && kotlinc -version 2>&1 | awk '{print $3}')%f%b"
-
-  # PHP
-  [[ -f "composer.json" ]] && versions+=" %B%F{blue} $(php --version 2>/dev/null | head -n 1 | cut -d' ' -f2)%f%b"
-
-  # Docker
-  [[ -f "Dockerfile" || -f "docker-compose.yml" ]] && versions+=" %B%F{blue} %f%b"
-
   echo "$versions"
 }
 
 # --- Git Prompt (Optimized) ---
 git_custom_prompt() {
+  # Fast check: are we in a git repo?
+  git rev-parse --is-inside-work-tree &>/dev/null || return
+
   local ref
-  ref=$(git symbolic-ref --short HEAD 2> /dev/null) || return
+  ref=$(git symbolic-ref --short HEAD 2> /dev/null) || ref=$(git rev-parse --short HEAD 2> /dev/null)
 
   # Use --porcelain for speed
   local git_status=$(git status --porcelain 2>/dev/null)
@@ -82,56 +85,58 @@ git_custom_prompt() {
     status_text=" %F{cyan}✦%f"
   fi
 
-  echo " %B%F{magenta} ${ref}${status_text}%f%b"
+  echo "  { %B%F{magenta}$(get_random_git_text)  ${ref}${status_text}%f%b}"
 }
 
 # --- Performance Hook (The Fix) ---
 # Initialize variables
 typeset -g _last_pwd=""
 typeset -g _cached_versions=""
+typeset -g cmd_start_time=""
 
 function preexec() {
-  timer=${timer:-$SECONDS}
+  cmd_start_time=$SECONDS
 }
 
 function precmd() {
   # 1. Timer Logic
-  if [ $timer ]; then
-    local timer_show=$(($SECONDS - $timer))
-    if [[ $timer_show -ge 2 ]]; then
-      export RPROMPT_TIME="%F{yellow}⏱ ${timer_show}s%f "
-    else
-      export RPROMPT_TIME=""
+  local timer_show=""
+  if [[ -n $cmd_start_time ]]; then
+    local elapsed=$(($SECONDS - $cmd_start_time))
+    if [[ $elapsed -ge 2 ]]; then
+      timer_show="%F{yellow}⏱ ${elapsed}s%f "
     fi
-    unset timer
+    unset cmd_start_time
   fi
+  # Exporting it so RPROMPT can see it
+  typeset -g RPROMPT_TIME="$timer_show"
 
   # 2. Smart Cache for Versions (The lag fix)
-  # Only run the heavy detection if the directory changed
   if [[ "$PWD" != "$_last_pwd" ]]; then
-    _cached_versions=$(detect_project_versions)
+    _cached_versions=$(detect_project_versions_logic)
     _last_pwd="$PWD"
   fi
 }
 
 get_music_status() {
+  
   if command -v playerctl &> /dev/null; then
-    # Quick check first to avoid timeout lag
-  #  if [[ $(playerctl status 2>/dev/null) == "Playing" ]]; then
+    # Quick check first to avoid timeout lag 
       local song_full=$(playerctl metadata title 2>/dev/null | head -n 1)
       local song=$song_full
       [[ ${#song_full} -gt 25 ]] && song="${song_full:0:25}..."
-      echo " %F{green}🎵 ${song}%f"
-   # fi
+      echo " %F{green}🎵 ${song}%f" 
   fi
 }
 
 # --- The Prompt Layout ---
 
-# Line 1 uses ${_cached_versions} variable instead of $(function)
+# Left Prompt
+# We use ${_cached_versions} directly because precmd updates it
 PROMPT='
 %B%F{blue}╭─%F{cyan}  %n%f%b %F{magenta}$(get_random_doodle)%f %B%F{blue} %~%f%b$(git_custom_prompt)${_cached_versions}
 %B%F{blue}╰─%F{magenta} ✦ %* ✦%f '
 
 # Right Prompt
-RPROMPT='${RPROMPT_TIME}%b$(get_music_status) %f'
+# Note: Single quotes are important here so variables expand at render time
+RPROMPT='${RPROMPT_TIME}%b$(get_music_status)%f'
