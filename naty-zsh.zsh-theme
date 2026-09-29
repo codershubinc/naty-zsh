@@ -2,6 +2,7 @@
 setopt prompt_subst
 
 # --- Configuration & Assets ---
+NATY_ZSH_VERSION="v0.0.1"
 THEME_DIR="${0:A:h}"
 
 # 1. Random Text (kept for potential future use)
@@ -143,3 +144,12 @@ PROMPT='
 # Right Prompt
 # Note: Single quotes are important here so variables expand at render time
 RPROMPT='${RPROMPT_TIME}%b$(get_music_status)%f'
+
+# --- Shell Helper Commands ---
+naty-version() {
+  local ver="${NATY_ZSH_VERSION:-unknown}"
+  if [[ -f "$THEME_DIR/VERSION" ]]; then
+    ver=$(<"$THEME_DIR/VERSION")
+  fi
+  echo "naty-zsh ${ver}"
+}

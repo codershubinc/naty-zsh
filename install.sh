@@ -41,6 +41,9 @@ curl -fsSL "${REPO_RAW_URL}/naty-zsh.zsh-theme" -o "${THEME_DIR}/naty-zsh.zsh-th
 echo -e "${BLUE}==>${NC} Downloading naty-zsh-random-texts.txt..."
 curl -fsSL "${REPO_RAW_URL}/naty-zsh-random-texts.txt" -o "${THEME_DIR}/naty-zsh-random-texts.txt"
 
+echo -e "${BLUE}==>${NC} Downloading VERSION metadata..."
+curl -fsSL "${REPO_RAW_URL}/VERSION" -o "${THEME_DIR}/VERSION" 2>/dev/null || true
+
 echo -e "${GREEN}✔ Theme files successfully downloaded!${NC}\n"
 
 # 3. Configure ~/.zshrc
