@@ -34,14 +34,14 @@ fi
 echo -e "${BLUE}==>${NC} Installing to: ${CYAN}${THEME_DIR}${NC}"
 mkdir -p "$THEME_DIR"
 
-# Download theme and phrase list with progress bar
-echo -e "${BLUE}==>${NC} Downloading ${CYAN}naty-zsh.zsh-theme${NC}..."
-curl -fL --progress-bar "${REPO_RAW_URL}/naty-zsh.zsh-theme" -o "${THEME_DIR}/naty-zsh.zsh-theme"
+# Download theme and phrase list
+echo -e "${BLUE}==>${NC} Downloading naty-zsh.zsh-theme..."
+curl -fsSL "${REPO_RAW_URL}/naty-zsh.zsh-theme" -o "${THEME_DIR}/naty-zsh.zsh-theme"
 
-echo -e "${BLUE}==>${NC} Downloading ${CYAN}naty-zsh-random-texts.txt${NC}..."
-curl -fL --progress-bar "${REPO_RAW_URL}/naty-zsh-random-texts.txt" -o "${THEME_DIR}/naty-zsh-random-texts.txt"
+echo -e "${BLUE}==>${NC} Downloading naty-zsh-random-texts.txt..."
+curl -fsSL "${REPO_RAW_URL}/naty-zsh-random-texts.txt" -o "${THEME_DIR}/naty-zsh-random-texts.txt"
 
-echo -e "\n${GREEN}✔ Theme files successfully downloaded!${NC}\n"
+echo -e "${GREEN}✔ Theme files successfully downloaded!${NC}\n"
 
 # Configure ~/.zshrc if user wants or Oh My Zsh is detected
 ZSHRC="$HOME/.zshrc"
