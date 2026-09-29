@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>naty-zsh — A snappy, expressive Zsh theme</title>
+  <meta name="description" content="A fast, aesthetic Zsh theme with expressive doodles, dynamic git action phrases, language runtime badges, and execution timers.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b10;
+      --card-bg: rgba(18, 22, 34, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(168, 85, 247, 0.4);
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent-purple: #c084fc;
+      --accent-cyan: #38bdf8;
+      --accent-blue: #60a5fa;
+      --accent-green: #4ade80;
+      --accent-yellow: #facc15;
+      --accent-magenta: #f472b6;
+      --terminal-header: #131722;
+      --code-bg: #0d111a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Ambient background glowing orbs */
+    .glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      z-index: -1;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .glow-1 {
+      top: -10%;
+      left: 15%;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, #8b5cf6, #3b82f6);
+    }
+    .glow-2 {
+      top: 40%;
+      right: 10%;
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, #ec4899, #8b5cf6);
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    .hero {
+      text-align: center;
+      max-width: 820px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(192, 132, 252, 0.12);
+      border: 1px solid rgba(192, 132, 252, 0.28);
+      color: var(--accent-purple);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5.5vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 70%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Install command bar */
+    .install-box {
+      max-width: 720px;
+      margin: 0 auto;
+      background: rgba(13, 17, 26, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 0.6rem 0.8rem 0.6rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.7), 0 0 30px -10px rgba(168, 85, 247, 0.25);
+    }
+
+    .install-cmd {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: nowrap;
+      text-align: left;
+    }
+    .install-cmd span.prefix {
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .copy-btn {
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      color: #fff;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+    }
+    .copy-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+    .copy-btn.copied {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Terminal Preview (Interactive) */
+    .terminal-wrapper {
+      max-width: 950px;
+      margin: 3.5rem auto 2.5rem;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--code-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.15);
+    }
+
+    .terminal-bar {
+      background: var(--terminal-header);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .terminal-title {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-left: auto;
+      margin-right: auto;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-body {
+      padding: 1.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      line-height: 1.85;
+      text-align: left;
+    }
+
+    .t-blue { color: var(--accent-blue); }
+    .t-cyan { color: var(--accent-cyan); }
+    .t-magenta { color: var(--accent-magenta); }
+    .t-green { color: var(--accent-green); }
+    .t-yellow { color: var(--accent-yellow); }
+    .t-white { color: #f8fafc; font-weight: 600; }
+    .t-dim { color: #64748b; }
+
+    .interactive-doodle {
+      cursor: pointer;
+      display: inline-block;
+      transition: transform 0.2s ease;
+      background: rgba(244, 114, 182, 0.12);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .interactive-doodle:hover {
+      transform: scale(1.1);
+      background: rgba(244, 114, 182, 0.25);
+    }
+
+    /* Live Screenshot Demonstrations Carousel / Gallery */
+    .demo-section {
+      max-width: 950px;
+      margin: 4.5rem auto;
+    }
+
+    .gallery-container {
+      background: rgba(13, 17, 26, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .gallery-tabs {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .gallery-tab {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .gallery-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .gallery-tab.active {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(99, 102, 241, 0.25));
+      border-color: var(--accent-purple);
+      color: #fff;
+    }
+
+    .gallery-viewport {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #000;
+    }
+
+    .gallery-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
+
+    .gallery-caption {
+      margin-top: 1rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* Feature Grid */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+    }
+    .feature-card:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .feature-card p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    /* Manual Steps */
+    .section-title {
+      text-align: center;
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      color: #fff;
+    }
+
+    .section-desc {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 2.25rem;
+      font-size: 1rem;
+    }
+
+    .manual-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .manual-step {
+      margin-bottom: 1.5rem;
+    }
+    .manual-step:last-child {
+      margin-bottom: 0;
+    }
+    .step-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: #f1f5f9;
+    }
+    .code-block {
+      background: var(--code-bg);
+      padding: 0.9rem 1.1rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      overflow-x: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    footer a {
+      color: var(--accent-purple);
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <header>
+    <a href="#" class="logo">
+      <span class="logo-badge">ZSH</span>
+      naty-zsh
+    </a>
+    <div class="nav-links">
+      <a href="https://github.com/codershubinc/naty-zsh" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="pill">⚡ Ultra-snappy &bull; Zero Lag Pre-cached Badges</div>
+      <h1>Expressive Zsh Theme with Attitude</h1>
+      <p>Delightful kaomojis, snappy Git indicators, active language versions, and instant command execution timers without prompt slowdown.</p>
+
+      <div class="install-box">
+        <div class="install-cmd" id="installCmd">
+          <span class="prefix">$ </span>curl -fsSL https://naty-zsh.codershubinc.com/install.sh | bash
+        </div>
+        <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()">
+          <span id="copyText">Copy</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Terminal mockup (Interactive demo) -->
+    <div class="terminal-wrapper">
+      <div class="terminal-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span class="terminal-title">interactive prompt simulator</span>
+      </div>
+      <div class="terminal-body">
+        <div class="t-dim"># Click the pink doodle or prompt below to cycle live kaomojis & phrases!</div>
+        <br>
+        <div style="cursor: pointer;" onclick="nextDoodle()">
+          <span class="t-blue">╭─</span><span class="t-cyan">  developer</span> <span class="t-magenta interactive-doodle" id="doodle" title="Click to change doodle!">( ಠ_ಠ )</span> <span class="t-blue"> ~/Github/awesome-project</span> <span class="t-magenta">{ <span id="gitText">💣 Detonating</span>  master <span class="t-green">+6</span> <span class="t-yellow">~9</span> <span class="t-dim" style="color:#ef4444">-1</span> }</span> <span class="t-cyan"> 1.27.1</span>
+        </div>
+        <div>
+          <span class="t-blue">╰─</span><span class="t-magenta"> ✦ 09:58:26 ✦</span> <span class="t-white">git status</span> <span style="float: right;" class="t-green">🎵 The Mentalist Series Expl...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demonstrations (Screenshots from assets) -->
+    <section class="demo-section">
+      <h2 class="section-title">Visual Demonstrations</h2>
+      <p class="section-desc">Real terminal screenshots showing kaomojis, porcelain git diffs, runtime versions, and active media playback:</p>
+      
+      <div class="gallery-container">
+        <div class="gallery-tabs">
+          <button class="gallery-tab active" onclick="switchScreenshot('assets/0.png', 'Demonstration 1: Git branch status (+6 ~9 -1), Go runtime badge, and Spotify/playerctl integration.', this)">
+            <span>💥 Detonating</span>
+            <span class="t-dim">( ಠ_ಠ )</span>
+          </button>
+          <button class="gallery-tab" onclick="switchScreenshot('assets/1.png', 'Demonstration 2: Live Kaomoji doodle with updated timestamp and background track display.', this)">
+            <span>🎵 Media Player</span>
+            <span class="t-dim">Shiddat Track</span>
+          </button>
+          <button class="gallery-tab" onclick="switchScreenshot('assets/3.png', 'Demonstration 3: Clean repo branch status with target indicator and cute kaomoji expression.', this)">
+            <span>🎯 Assassinating</span>
+            <span class="t-dim">♥( ◡‿◡ )</span>
+          </button>
+        </div>
+
+        <div class="gallery-viewport">
+          <img id="activeScreenshot" class="gallery-img" src="assets/0.png" alt="naty-zsh terminal demonstration screenshot">
+        </div>
+        <p class="gallery-caption" id="screenshotCaption">Demonstration 1: Git branch status (+6 ~9 -1), Go runtime badge, and Spotify/playerctl integration.</p>
+      </div>
+    </section>
+
+    <!-- Feature Grid -->
+    <section class="features">
+      <div class="feature-card">
+        <span class="feature-icon">✨</span>
+        <h3>Random Kaomoji Doodles</h3>
+        <p>Dynamic terminal face expressions like <code>( ಠ_ಠ )</code>, <code>♥( ◡‿◡ )</code>, and <code>( ✦ ‿ ✦ )</code> update with every command prompt.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🌿</span>
+        <h3>Punchy Git Status</h3>
+        <p>Instant porcelain-based Git status with counts of added <code>+N</code>, modified <code>~N</code>, or deleted <code>-N</code> files and witty action phrases.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3>Smart Cached Runtimes</h3>
+        <p>Auto-detects Go (<code></code>), Node.js (<code></code>), Python (<code></code>), and Rust (<code></code>) with precmd path caching so your terminal never lags.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⏱</span>
+        <h3>Command Execution Timer</h3>
+        <p>Long-running commands (&ge; 2 seconds) automatically show their duration in your right prompt cleanly.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎵</span>
+        <h3>Media Integration</h3>
+        <p>Optional Spotify or media player status indicator via <code>playerctl</code> tucked nicely into the right prompt.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎨</span>
+        <h3>Two-Line Clean Aesthetic</h3>
+        <p>Spacious, organized double-line layout ensures long directory paths never wrap or ruin your command line input.</p>
+      </div>
+    </section>
+
+    <!-- Manual Installation -->
+    <h2 class="section-title">Manual Installation</h2>
+    <div class="manual-box">
+      <div class="manual-step">
+        <div class="step-title">1. Download into your Oh My Zsh custom themes directory</div>
+        <div class="code-block">curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh.zsh-theme -o ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/naty-zsh.zsh-theme
+curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh-random-texts.txt -o ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/naty-zsh-random-texts.txt</div>
+      </div>
+      <div class="manual-step">
+        <div class="step-title">2. Enable it in ~/.zshrc</div>
+        <div class="code-block">ZSH_THEME="naty-zsh"</div>
+      </div>
+      <div class="manual-step">
+        <div class="step-title">3. Reload your shell</div>
+        <div class="code-block">source ~/.zshrc</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Crafted by <a href="https://github.com/codershubinc" target="_blank">codershubinc</a> &bull; Licensed under <a href="https://github.com/codershubinc/naty-zsh/blob/main/LICENSE" target="_blank">GNU GPL v3.0</a> &bull; <a href="https://github.com/codershubinc/naty-zsh" target="_blank">naty-zsh on GitHub</a></p>
+  </footer>
+
+  <script>
+    const doodles = [
+      "( ಠ_ಠ )", "♥( ◡‿◡ )", "( ✦ ‿ ✦ )", "✧( ु•⌄• )", "[ ✦_✦ ]",
+      "*( ◕ ◡ ◕ )*", "⟡", "✧･ﾟ: *", "<( ✦ )>", "くコ:彡",
+      "[ ⚠_⚠ ]", "( 0_0 )", "⊂(▀¯▀⊂)", "〈 0x0 〉", "⌁☍",
+      "【 ✖_✖ 】", "( ˘ ɜ˘) ♬", "(≧◡≦)", "(¬‿¬)", "♡( ━_━ )",
+      "uwu", "( ╯°□°)╯ ┻━━┻"
+    ];
+    const texts = [
+      "💣 Detonating", "🎯 Assassinating", "🔨 Hacking", "💥 Breaking",
+      "🔧 Fixing", "💻 Coding in", "🎯 Messing with", "✨ Vibing in",
+      "⚡ Wrecking", "⚔️ Slaying", "🎮 Pwning", "⚡ Decimating"
+    ];
+
+    let doodleIdx = 0;
+    let textIdx = 0;
+
+    function nextDoodle() {
+      doodleIdx = (doodleIdx + 1) % doodles.length;
+      textIdx = (textIdx + 1) % texts.length;
+      document.getElementById('doodle').innerText = doodles[doodleIdx];
+      document.getElementById('gitText').innerText = texts[textIdx];
+    }
+
+    function switchScreenshot(src, caption, tabElement) {
+      const img = document.getElementById('activeScreenshot');
+      const cap = document.getElementById('screenshotCaption');
+      img.style.opacity = '0.3';
+      setTimeout(() => {
+        img.src = src;
+        img.style.opacity = '1';
+        cap.innerText = caption;
+      }, 150);
+
+      document.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
+      tabElement.classList.add('active');
+    }
+
+    function copyInstallCmd() {
+      const cmd = "curl -fsSL https://naty-zsh.codershubinc.com/install.sh | bash";
+      navigator.clipboard.writeText(cmd).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const txt = document.getElementById('copyText');
+        btn.classList.add('copied');
+        txt.innerText = 'Copied! ✔';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          txt.innerText = 'Copy';
+        }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>

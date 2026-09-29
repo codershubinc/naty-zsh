@@ -7,7 +7,29 @@ Files included
 - `naty-zsh.zsh-theme` — the theme file (works with Oh My Zsh or plain zsh).
 - `naty-zsh-random-texts.txt` — a list of short phrases used by the theme.
 
-Install (Oh My Zsh)
+## ⚡ Quick Install
+
+Run this one-liner in your terminal:
+
+```sh
+curl -fsSL https://naty-zsh.codershubinc.com/install.sh | bash
+```
+
+*(Or via GitHub raw URL if DNS is not yet propagated)*:
+```sh
+curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/install.sh | bash
+```
+
+After installation, reload your shell:
+```sh
+source ~/.zshrc
+```
+
+🌐 **Website & Live Demo:** [https://naty-zsh.codershubinc.com](https://naty-zsh.codershubinc.com)
+
+---
+
+## Manual Install (Oh My Zsh)
 
 1. Copy the theme and text file into your custom themes folder:
 
@@ -51,11 +73,13 @@ Content warning
 
 The shipped `nauty-zsh-random-texts.txt` contains profanity and violent or aggressive phrasing. Edit the file if that is not suitable for your environment.
 
-Example
+## Demonstrations
 
-When you're inside a Git repo you may see a line similar to:
+![naty-zsh Demonstration 1](assets/0.png)
 
-`username Hacking [~/project] (main) Branch ✔`
+![naty-zsh Demonstration 2](assets/1.png)
+
+![naty-zsh Demonstration 3](assets/3.png)
 
 Contributing
 
@@ -63,4 +87,5 @@ Contributions welcome. Please keep language and content appropriate when adding 
 
 License
 
-This repository does not include a license file. Add a `LICENSE` if you want to set explicit usage terms.
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
+
