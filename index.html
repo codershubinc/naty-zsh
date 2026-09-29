@@ -827,9 +827,9 @@
           <span>Fast Install</span>
         </div>
         <div class="stat-sep"></div>
-        <a href="https://github.com/codershubinc/naty-zsh/releases" target="_blank" rel="noopener" class="stat-item">
+        <a id="ghReleaseLink" href="https://github.com/codershubinc/naty-zsh/releases" target="_blank" rel="noopener" class="stat-item">
           <span class="stat-icon" style="color: #c084fc;">🏷️</span>
-          <span class="stat-val">v0.0.1</span>
+          <span class="stat-val" id="ghReleaseTag">v0.0.1</span>
           <span>Latest Release</span>
         </a>
         <div class="stat-sep"></div>
@@ -1161,6 +1161,19 @@ curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh
         if (data && typeof data.stargazers_count === 'number') {
           const starsEl = document.getElementById('ghStars');
           if (starsEl) starsEl.innerText = data.stargazers_count;
+        }
+      })
+      .catch(() => {});
+
+    // Dynamically fetch latest release data from GitHub API
+    fetch('https://api.github.com/repos/codershubinc/naty-zsh/releases/latest')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.tag_name) {
+          const tagEl = document.getElementById('ghReleaseTag');
+          const linkEl = document.getElementById('ghReleaseLink');
+          if (tagEl) tagEl.innerText = data.tag_name;
+          if (linkEl && data.html_url) linkEl.href = data.html_url;
         }
       })
       .catch(() => {});
