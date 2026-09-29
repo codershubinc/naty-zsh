@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- Nerd Font Webfont for prompt glyphs (Arch, Git branch, folder, language icons) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/firacode-nerd-font.css">
   <style>
     :root {
       --bg: #090b10;
@@ -238,15 +240,19 @@
       font-size: 0.8rem;
       margin-left: auto;
       margin-right: auto;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'FiraCode Nerd Font', monospace;
     }
 
     .terminal-body {
       padding: 1.75rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'FiraCode Nerd Font', monospace;
       font-size: 0.92rem;
       line-height: 1.85;
       text-align: left;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'FiraCode Nerd Font', monospace;
     }
 
     .t-blue { color: var(--accent-blue); }
@@ -422,6 +428,19 @@
       overflow-x: auto;
     }
 
+    .font-tip {
+      margin-top: 1.25rem;
+      padding: 0.85rem 1.1rem;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .font-tip strong {
+      color: #38bdf8;
+    }
+
     footer {
       text-align: center;
       padding: 3rem 1.5rem;
@@ -570,6 +589,9 @@ curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh
       <div class="manual-step">
         <div class="step-title">3. Reload your shell</div>
         <div class="code-block">source ~/.zshrc</div>
+      </div>
+      <div class="font-tip">
+        <strong>💡 Note on Icons:</strong> naty-zsh uses <a href="https://www.nerdfonts.com" target="_blank" style="color:#38bdf8;">Nerd Fonts</a> for terminal glyphs (Arch, Git branch, folder, and runtime badges). Be sure your terminal emulator (Alacritty, Kitty, WezTerm, iTerm2, etc.) is configured with any Nerd Font (e.g., <em>JetBrains Mono Nerd Font</em>, <em>FiraCode Nerd Font</em>).
       </div>
     </div>
   </main>
