@@ -29,36 +29,53 @@ source ~/.zshrc
 
 ---
 
-## Manual Install (Oh My Zsh)
+## Compatibility
 
-1. Copy the theme and text file into your custom themes folder:
+> **Does naty-zsh require Oh My Zsh?**
+>
+> **No!** `naty-zsh` is completely **standalone** and has zero dependencies on Oh My Zsh frameworks or plugins. It works natively with plain Zsh, as well as as a drop-in theme for Oh My Zsh. The automated installer will auto-detect your environment.
 
+---
+
+## Manual Installation
+
+### Option A: Oh My Zsh
+
+1. Copy the files into your custom themes folder:
 ```sh
 cp naty-zsh.zsh-theme ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/
 cp naty-zsh-random-texts.txt ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/
 ```
 
 2. Set the theme in `~/.zshrc`:
-
 ```sh
 ZSH_THEME="naty-zsh"
 ```
 
 3. Reload Zsh:
-
 ```sh
 source ~/.zshrc
 ```
 
-Manual usage
+### Option B: Plain / Standalone Zsh (No Oh My Zsh required)
 
-Source the theme directly in `~/.zshrc`:
-
+1. Clone or place the files anywhere (e.g., `~/.zsh/themes/naty-zsh`):
 ```sh
-source /path/to/naty-zsh.zsh-theme
+mkdir -p ~/.zsh/themes/naty-zsh
+cp naty-zsh.zsh-theme naty-zsh-random-texts.txt ~/.zsh/themes/naty-zsh/
 ```
 
-Ensure `naty-zsh-random-texts.txt` sits next to the theme file so the random phrases are loaded.
+2. Source the theme directly in `~/.zshrc`:
+```sh
+source ~/.zsh/themes/naty-zsh/naty-zsh.zsh-theme
+```
+
+3. Reload Zsh:
+```sh
+source ~/.zshrc
+```
+
+*(Ensure `naty-zsh-random-texts.txt` is in the same directory as `naty-zsh.zsh-theme` so the phrases load).*
 
 Customization
 

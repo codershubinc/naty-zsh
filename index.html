@@ -578,19 +578,25 @@
     <h2 class="section-title">Manual Installation</h2>
     <div class="manual-box">
       <div class="manual-step">
-        <div class="step-title">1. Download into your Oh My Zsh custom themes directory</div>
+        <div class="step-title">Option A: Oh My Zsh</div>
         <div class="code-block">curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh.zsh-theme -o ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/naty-zsh.zsh-theme
-curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh-random-texts.txt -o ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/naty-zsh-random-texts.txt</div>
+curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh-random-texts.txt -o ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/naty-zsh-random-texts.txt
+# Set in ~/.zshrc: ZSH_THEME="naty-zsh"</div>
       </div>
       <div class="manual-step">
-        <div class="step-title">2. Enable it in ~/.zshrc</div>
-        <div class="code-block">ZSH_THEME="naty-zsh"</div>
+        <div class="step-title">Option B: Standalone Zsh (No Oh My Zsh required)</div>
+        <div class="code-block">mkdir -p ~/.zsh/themes/naty-zsh
+curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh.zsh-theme -o ~/.zsh/themes/naty-zsh/naty-zsh.zsh-theme
+curl -fsSL https://raw.githubusercontent.com/codershubinc/naty-zsh/main/naty-zsh-random-texts.txt -o ~/.zsh/themes/naty-zsh/naty-zsh-random-texts.txt
+# Add to ~/.zshrc: source ~/.zsh/themes/naty-zsh/naty-zsh.zsh-theme</div>
       </div>
       <div class="manual-step">
-        <div class="step-title">3. Reload your shell</div>
+        <div class="step-title">Reload Shell</div>
         <div class="code-block">source ~/.zshrc</div>
       </div>
       <div class="font-tip">
+        <strong>💡 Standalone & Oh My Zsh Ready:</strong> naty-zsh has zero external framework dependencies and runs directly in pure Zsh as well as Oh My Zsh.
+        <br><br>
         <strong>💡 Note on Icons:</strong> naty-zsh uses <a href="https://www.nerdfonts.com" target="_blank" style="color:#38bdf8;">Nerd Fonts</a> for terminal glyphs (Arch, Git branch, folder, and runtime badges). Be sure your terminal emulator (Alacritty, Kitty, WezTerm, iTerm2, etc.) is configured with any Nerd Font (e.g., <em>JetBrains Mono Nerd Font</em>, <em>FiraCode Nerd Font</em>).
       </div>
     </div>
