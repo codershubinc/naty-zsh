@@ -112,6 +112,7 @@ else
     # If running interactively, ask; if piped via curl | bash, default to yes
     if [ -t 0 ]; then
         read -p "  Would you like to install JetBrains Mono Nerd Font now? [Y/n]: " choice
+        choice=${choice:-y}
         case "$choice" in
             [nN][oO]|[nN]) install_font="n" ;;
             *) install_font="y" ;;
@@ -142,6 +143,33 @@ else
     else
         echo -e "${YELLOW}ℹ Skipping font installation. You can install a Nerd Font manually from: https://www.nerdfonts.com${NC}"
     fi
+fi
+
+# 5. Optional Package Manager Upgrade Hook (yay, pacman, apt)
+echo -e "\n${BLUE}==>${NC} Package Manager Auto-Update Integration:"
+echo -e "  Automatically checks for naty-zsh updates when you upgrade your system (e.g. via ${CYAN}yay${NC}, ${CYAN}pacman -Syu${NC}, or ${CYAN}apt upgrade${NC})."
+echo -e "  ${GREEN}✔ Zero root permissions required (pure shell wrapper).${NC}"
+
+enable_auto_update="y"
+if [ -t 0 ]; then
+    read -p "  Would you like to enable auto-update checks on system upgrades? [Y/n]: " choice_update
+    choice_update=${choice_update:-y}
+    case "$choice_update" in
+        [nN][oO]|[nN]) enable_auto_update="n" ;;
+        *) enable_auto_update="y" ;;
+    esac
+fi
+
+if [ "$enable_auto_update" = "y" ]; then
+    if ! grep -q 'NATY_ZSH_AUTO_UPGRADE' "$ZSHRC"; then
+        echo "" >> "$ZSHRC"
+        echo "# Check for naty-zsh updates on yay / pacman / apt system upgrades" >> "$ZSHRC"
+        echo "export NATY_ZSH_AUTO_UPGRADE=1" >> "$ZSHRC"
+    fi
+    echo -e "${GREEN}✔ Auto-update check enabled in ~/.zshrc!${NC}"
+else
+    echo -e "${YELLOW}⚠️  Warning: Auto-update is disabled.${NC}"
+    echo -e "   You will need to manually run ${CYAN}naty-update${NC} or re-run the installer to get future releases and bug fixes."
 fi
 
 echo -e "\n${PURPLE}🎉 naty-zsh installed successfully!${NC}"

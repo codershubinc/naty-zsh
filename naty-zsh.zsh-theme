@@ -153,3 +153,60 @@ naty-version() {
   fi
   echo "naty-zsh ${ver}"
 }
+
+naty-update() {
+  local remote_ver
+  remote_ver=$(curl -fsSL --connect-timeout 2 "https://raw.githubusercontent.com/codershubinc/naty-zsh/main/VERSION" 2>/dev/null)
+  local local_ver="${NATY_ZSH_VERSION:-unknown}"
+  [[ -f "$THEME_DIR/VERSION" ]] && local_ver=$(<"$THEME_DIR/VERSION")
+
+  if [[ -n "$remote_ver" && "$remote_ver" != "$local_ver" ]]; then
+    echo -e "\n%F{yellow}★ naty-zsh update available:%f %F{green}${local_ver}%f -> %F{cyan}${remote_ver}%f"
+    echo -n "  Update now? [Y/n]: "
+    read -r ans
+    if [[ "$ans" =~ ^[Yy]?$ ]]; then
+      curl -fsSL https://naty-zsh.codershubinc.com/install.sh | bash
+    fi
+  else
+    echo -e "%F{green}✔ naty-zsh is up to date (${local_ver})%f"
+  fi
+}
+
+# --- Optional Package Manager Upgrade Hook ---
+if [[ "$NATY_ZSH_AUTO_UPGRADE" == "1" ]]; then
+  # Arch Linux (yay)
+  if command -v yay &>/dev/null; then
+    yay() {
+      command yay "$@"
+      local ret=$?
+      if [[ $ret -eq 0 && ( "$1" =~ "-S.*u" || -z "$1" ) ]]; then
+        naty-update
+      fi
+      return $ret
+    }
+  fi
+
+  # Arch Linux (pacman)
+  if command -v pacman &>/dev/null; then
+    pacman() {
+      command pacman "$@"
+      local ret=$?
+      if [[ $ret -eq 0 && "$1" =~ "-S.*u" ]]; then
+        naty-update
+      fi
+      return $ret
+    }
+  fi
+
+  # Debian / Ubuntu (apt)
+  if command -v apt &>/dev/null; then
+    apt() {
+      command apt "$@"
+      local ret=$?
+      if [[ $ret -eq 0 && ( "$1" == "upgrade" || "$1" == "dist-upgrade" || "$1" == "full-upgrade" ) ]]; then
+        naty-update
+      fi
+      return $ret
+    }
+  fi
+fi
