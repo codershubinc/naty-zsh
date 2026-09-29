@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Execution Timer**: Measures execution time for long-running commands (duration &ge; 2 seconds) and displays cleanly in `RPROMPT`.
 - **Media Player Integration**: Right prompt track status via `playerctl` (Spotify, browser, local media players).
 - **Standalone & Oh My Zsh Support**: Works natively in plain Zsh without requiring Oh My Zsh, while also functioning as a drop-in OMZ theme.
-- **One-Liner Installer (`install.sh`)**: Automated installer with shell detection, automatic `~/.zshrc` configuration, and backup creation.
+- **One-Liner Installer (`install.sh`)**: Automated installer with shell detection, automatic `~/.zshrc` configuration, backup creation, and automatic **Nerd Font detection & installation** (JetBrains Mono Nerd Font).
 - **Showcase Website**: Interactive web landing page with live prompt playground, screenshot gallery, and Nerd Font webfont fallback.
 - **License**: Released under the GNU General Public License v3.0 (GPL-3.0).
 
